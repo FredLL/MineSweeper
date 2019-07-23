@@ -1,0 +1,10 @@
+.shell {
+    display: inline-block;
+    width: 2rem;
+    height: 2rem;
+    background-size: contain;
+    background-color: lightblue;
+    border-width: 0.2rem;
+    border-style: outset;
+}
+
