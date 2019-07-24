@@ -1,12 +1,22 @@
 import * as React from "react";
 import { BombShell } from "./BombShell";
-import { reducer, initMines } from "./reducer";
-import { width, height } from "./config";
+import { reduceGameMap, initMines } from "./reducer";
 
-export const Game:React.FC<{}> = () => {
-    const [state, dispatch] = React.useReducer(reducer, {gameMap: []});
+interface GameProps {
+    cols: number;
+    rows: number;
+    nbMines: number;
+}
+export const Game:React.FC<GameProps> = (props: GameProps) => {
+    const {rows, cols, nbMines} = props;
+    const [state, dispatch] = React.useReducer(reduceGameMap, {
+        gameMap: [],
+        mineMap: initMines(rows, cols, nbMines),
+        rows: rows,
+        cols: cols,
+        nbMines: nbMines
+    });
     const onShellClick = (row: number, col: number, type: number) => {
-        initMines();
         dispatch({
             type: 'click',
             col: col,
@@ -16,10 +26,10 @@ export const Game:React.FC<{}> = () => {
     }
     
     const game: JSX.Element[] = [];
-    for (let iRow = 0; iRow < height; iRow++) {
+    for (let iRow = 0; iRow < rows; iRow++) {
         const row:JSX.Element[] = [];
-        for (let iCol = 0; iCol < width; iCol++) {
-            row.push(<BombShell key={iRow+'-'+iCol} x={iRow} y={iCol} etat={state.gameMap[iRow*width + iCol]} onclick={onShellClick}></BombShell>)
+        for (let iCol = 0; iCol < cols; iCol++) {
+            row.push(<BombShell key={iRow+'-'+iCol} x={iRow} y={iCol} etat={state.gameMap[iRow*cols + iCol]} onclick={onShellClick}></BombShell>)
         }
         game.push(<div key={iRow} className="row">{row}</div>);
     }

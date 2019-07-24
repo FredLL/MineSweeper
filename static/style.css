@@ -8,3 +8,61 @@
     border-style: outset;
 }
 
+.shell-0 {
+    border-style: inset;
+}
+
+.shell-1 {
+    border-style: inset;
+    background-image: url(Minesweeper_1.svg);
+}
+
+.shell-2 {
+    border-style: inset;
+    background-image: url(Minesweeper_2.svg);
+}
+
+.shell-3 {
+    border-style: inset;
+    background-image: url(Minesweeper_3.svg);
+}
+
+.shell-4 {
+    border-style: inset;
+    background-image: url(Minesweeper_4.svg);
+}
+
+.shell-5 {
+    border-style: inset;
+    background-image: url(Minesweeper_5.svg);
+}
+
+.shell-6 {
+    border-style: inset;
+    background-image: url(Minesweeper_6.svg);
+}
+
+.shell-7 {
+    border-style: inset;
+    background-image: url(Minesweeper_7.svg);
+}
+
+.shell-8 {
+    border-style: inset;
+    background-image: url(Minesweeper_8.svg);
+}
+
+.shell-9 {
+    border-style: inset;
+    background-image: url(Minesweeper_mine.png);
+}
+
+.shell-10 {
+    background-image: url(Minesweeper_flag.svg);
+}
+
+.shell-11 {
+    border-style: inset;
+    background-image: url(Minesweeper_mine.png);
+    background-color: red;
+}

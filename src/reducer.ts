@@ -1,5 +1,3 @@
-import { width, nbMines, height } from "./config";
-
 interface ActionType {
   type: 'click',
   col: number,
@@ -8,97 +6,100 @@ interface ActionType {
 }
 
 export interface StateType {
-    gameMap: number[]
+    gameMap: number[],
+    mineMap: number[],
+    cols: number,
+    rows: number,
+    nbMines: number
 }
 
-const MineMap:number[] = [];
+const baseDelta = [-1, 0, 1];
 
-export const initMines = () => {
-    if (!MineMap.length) {
-        console.info('calculating mines field');
-        let iMines = 0;
-        while (iMines < nbMines) {
-            const newMine = Math.round(Math.random() * width * height);
-            if (!MineMap[newMine]) {
-                MineMap[newMine] = 1;
-                iMines++;
-            }
-        }
+export const initMines = (rows: number, cols: number, nbMines: number) => {
+  const mineMap: number[] = [];
+  let iMines = 0;
+  while (iMines < nbMines) {
+    const newMine = Math.round(Math.random() * rows * cols);
+    if (!mineMap[newMine]) {
+      mineMap[newMine] = 1;
+      iMines++;
     }
+  }
+  return mineMap;
 };
 
-const calculateAround = (x:number, y:number):number => {
-    const p = x*width+y;
-    if (MineMap[p]) {
-        // Mine
-        return -1;
-    }
-    const baseCol:number[] = [];
-    [-1, 0, 1].forEach(i => {
-        if (i == 0 || Math.floor((p + i) / width) == Math.floor(p / width)) {
-            baseCol.push(i);
-        }
-    });
-    const baseRow:number[] = [];
-    [-1, 0, 1].forEach(i => {
-        if (i == 0) {
-            baseRow.push(i);
-        } else {
-            const nextLine = p + i * width;
-            if (nextLine >= 0 && nextLine < height * width) {
-                baseRow.push(i);
-            }
-        }
-    });
-    let res = 0;
-    baseRow.forEach(valx => {
-        baseCol.forEach(valy => {
-            if (Math.floor((p + valy) / height) == Math.floor(p / height)) {
-                const np = p + (valx*width+valy);
-                if (np >= 0 && np < width*height) {
-                    res += MineMap[np]?1:0;
-                }
-            }
-        });
-    });
-    return res;
-}
+const calculateAround = (row:number, col:number, mineMap: number[], rows: number, cols: number):number => {
+  let calculatedVal = 0;
+  const execCalculateAround = (rows: number, cols: number, newRow: number, newCol: number) => {
+    calculatedVal += mineMap[cols * newRow + newCol]?1:0;
+  };
+  executeAround(row, col, rows, cols, execCalculateAround);
+  return calculatedVal;
+};
 
-const updateGameMap = (gameMap: number[], row: number, col: number, done: number[] = []) => {
-  if (done.indexOf(row*width+col) > -1) {
+const executeAround = (row: number, col: number, rows: number, cols: number, exec: (rows: number, cols: number, newRow: number, newCol: number)=>void) => {
+  baseDelta.forEach(deltaCol => {
+    baseDelta.forEach(deltaRow => {
+      if (deltaCol != 0 || deltaRow != 0) {
+        const newRow = row + deltaRow;
+        const newCol = col + deltaCol;
+        if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
+          exec(rows, cols, newRow, newCol);
+        }
+      }
+    });
+  });
+};
+
+const updateGameMap = (gameMap: number[], mineMap: number[], rows: number, cols: number, row: number, col: number, done: number[] = []) => {
+  const p = row*cols+col;
+  if (done.indexOf(p) > -1) {
     return;
   }
-  done.push(row*width+col);
-  const res = calculateAround(row, col);
-  if (res >= 0) {
-    gameMap[row*width + col] = res;
-    if (res == 0) {
-      const baseDelta = [-1, 0, 1];
-      baseDelta.forEach(deltaCol => {
-        baseDelta.forEach(deltaRow => {
-          if (!(deltaCol == 0 && deltaRow == 0) && row + deltaRow >=0 && row + deltaRow < height && col + deltaCol >=0 && col + deltaCol < width) {
-            updateGameMap(gameMap, row+deltaRow, col+deltaCol, done);
-          }
-        });
-      });
-    }
-  } else {
-    gameMap[row*width + col] = 9;
+  done.push(p);
+  if (mineMap[p]) {
+    // Mine
+    gameMap[p] = 11;
+    return;
+  }
+  const res = calculateAround(row, col, mineMap, rows, cols);
+  gameMap[p] = res;
+  if (res == 0) {
+    const execOnGameMap = (rows: number, cols: number, newRow: number, newCol: number) => {
+      updateGameMap(gameMap, mineMap, rows, cols, newRow, newCol, done);
+    };
+    executeAround(row, col, rows, cols, execOnGameMap);
   }
 };
 
-export const reducer = (state: StateType, action: ActionType):StateType => {
+export const reduceGameMap = (state: StateType, action: ActionType):StateType => {
   if (action.type == 'click') {
-    const currentVal = state.gameMap[action.row*width + action.col];
+    const currentVal = state.gameMap[action.row*state.cols + action.col];
     const newState = (Object as any).assign({}, state);
     if (!currentVal) {
       if (action.which == 0) {
-        updateGameMap(newState.gameMap, action.row, action.col);
+        updateGameMap(newState.gameMap, newState.mineMap, newState.rows, newState.cols, action.row, action.col);
       } else if (action.which == 2) {
-        newState.gameMap[action.row*width + action.col] = 10;
+        newState.gameMap[action.row*newState.cols + action.col] = 10;
       }
     } else if (currentVal == 10 && action.which == 2) {
-      newState.gameMap[action.row*width + action.col] = 0;
+      newState.gameMap[action.row*newState.cols + action.col] = undefined;
+    } else if (currentVal && action.which == 1) {
+      let calculatedVal = 0;
+      const execCalculateVal = (rows: number, cols: number, newRow: number, newCol: number) => {
+        if (newState.gameMap[newRow * cols + newCol] == 10) {
+          calculatedVal++;
+        }
+      };
+      executeAround(action.row, action.col, state.rows, state.cols, execCalculateVal);
+      if (currentVal == calculatedVal) {
+        const execUpdateGameMap = (rows: number, cols: number, newRow: number, newCol: number) => {
+          if (typeof newState.gameMap[newRow * cols + newCol] == 'undefined') {
+            updateGameMap(newState.gameMap, state.mineMap, rows, cols, newRow, newCol);
+          }
+        };
+        executeAround(action.row, action.col, state.rows, state.cols, execUpdateGameMap);
+      }
     }
     return newState;
   }
