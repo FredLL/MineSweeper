@@ -17,5 +17,9 @@ export const BombShell:React.SFC<BombShellProps> = (props: BombShellProps) => {
         evt.preventDefault();
         onclick(x, y, evt.button);
     };
-    return <div className={'shell shell-' + etat} onMouseUp={shellClick} onContextMenu={cancelEvt}>&nbsp;</div>;
+    const classes = ['shell'];
+    if (typeof etat !== 'undefined') {
+        classes.push('shell-' + etat);
+    }
+    return <div className={classes.join(' ')} onMouseUp={shellClick} onContextMenu={cancelEvt}>&nbsp;</div>;
 };

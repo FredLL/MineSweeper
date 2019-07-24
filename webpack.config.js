@@ -5,7 +5,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    mode: 'development', //'production',
+    mode: 'production', //'development',
     entry: [
         "./src/App.tsx"
     ],

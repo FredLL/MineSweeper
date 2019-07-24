@@ -66,7 +66,9 @@ const updateGameMap = (gameMap: number[], mineMap: number[], rows: number, cols:
   gameMap[p] = res;
   if (res == 0) {
     const execOnGameMap = (rows: number, cols: number, newRow: number, newCol: number) => {
-      updateGameMap(gameMap, mineMap, rows, cols, newRow, newCol, done);
+      if (typeof gameMap[newRow*cols + newCol] == 'undefined') {
+        updateGameMap(gameMap, mineMap, rows, cols, newRow, newCol, done);
+      }
     };
     executeAround(row, col, rows, cols, execOnGameMap);
   }

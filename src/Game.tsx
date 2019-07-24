@@ -33,6 +33,12 @@ export const Game:React.FC<GameProps> = (props: GameProps) => {
         }
         game.push(<div key={iRow} className="row">{row}</div>);
     }
+    let nbFlags = 0;
+    state.gameMap.forEach(element => {
+        if (element == 10) {
+            nbFlags ++;
+        }
+    });
     
-    return <>{game}</>;
+    return <><div>{state.nbMines - nbFlags}</div>{game}</>;
 };
