@@ -80,6 +80,17 @@ const updateGameMap = (gameMap: number[], mineMap: number[], rows: number, cols:
   if (mineMap[p]) {
     // Mine
     gameMap[p] = 11;
+    // show un-discovered mines
+    mineMap.forEach((undefined, idx) => {
+      if (idx != p && gameMap[idx] != 10) {
+        gameMap[idx] = 9;
+      }
+    });
+    gameMap.forEach((val, idx, gm) => {
+      if (val == 10 && typeof mineMap[idx] == 'undefined') {
+        gameMap[idx] = 12;
+      }
+    });
     return true;
   }
   const res = calculateAround(row, col, mineMap, rows, cols);

@@ -71,3 +71,8 @@
     background-image: url(Minesweeper_mine.png);
     background-color: red;
 }
+
+.shell-12 {
+    background-image: url(Minesweeper_flag.svg);
+    background-color: orange;
+}
