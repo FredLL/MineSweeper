@@ -23,12 +23,12 @@ export interface StateType {
 
 const baseDelta = [-1, 0, 1];
 
-const initMines = (rows: number, cols: number, nbMines: number) => {
+const initMines = (rows: number, cols: number, nbMines: number, except: number) => {
   const mineMap: number[] = [];
   let iMines = 0;
   while (iMines < nbMines) {
     const newMine = Math.round(Math.random() * rows * cols);
-    if (!mineMap[newMine]) {
+    if (newMine != except && !mineMap[newMine]) {
       mineMap[newMine] = 1;
       iMines++;
     }
@@ -39,7 +39,7 @@ const initMines = (rows: number, cols: number, nbMines: number) => {
 export const initState = (rows: number, cols: number, nbMines: number):StateType => {
   return {
     gameMap: [],
-    mineMap: initMines(rows, cols, nbMines),
+    mineMap: [],
     rows: rows,
     cols: cols,
     nbMines: nbMines,
@@ -86,7 +86,7 @@ const updateGameMap = (gameMap: number[], mineMap: number[], rows: number, cols:
         gameMap[idx] = 9;
       }
     });
-    gameMap.forEach((val, idx, gm) => {
+    gameMap.forEach((val, idx) => {
       if (val == 10 && typeof mineMap[idx] == 'undefined') {
         gameMap[idx] = 12;
       }
@@ -109,18 +109,22 @@ const updateGameMap = (gameMap: number[], mineMap: number[], rows: number, cols:
 export const reduceGameMap = (state: StateType, action: ActionType):StateType => {
   if (action.type == 'click') {
     const clickAction = action as ShellClickAction;
-    const currentVal = state.gameMap[clickAction.row*state.cols + clickAction.col];
+    const p = clickAction.row * state.cols + clickAction.col;
+    const currentVal = state.gameMap[p];
     const newState = (Object as any).assign({}, state);
     if (typeof currentVal === 'undefined') {
       if (clickAction.which == 0) {
+        if (newState.mineMap.length == 0) {
+          newState.mineMap = initMines(newState.rows, newState.cols, newState.nbMines, p);
+        }
         if (updateGameMap(newState.gameMap, newState.mineMap, newState.rows, newState.cols, clickAction.row, clickAction.col)) {
           newState.result = true;
         }
       } else if (clickAction.which == 2) {
-        newState.gameMap[clickAction.row * newState.cols + clickAction.col] = 10;
+        newState.gameMap[p] = 10;
       }
     } else if (currentVal == 10 && clickAction.which == 2) {
-      newState.gameMap[clickAction.row * newState.cols + clickAction.col] = undefined;
+      newState.gameMap[p] = undefined;
     } else if (currentVal && clickAction.which == 1) {
       let calculatedVal = 0;
       const execCalculateVal = (rows: number, cols: number, newRow: number, newCol: number) => {

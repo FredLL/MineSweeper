@@ -3,6 +3,8 @@ import * as React from "react";
 interface BombShellProps {
     x: number;
     y: number;
+    width: string;
+    height: string;
     etat: number;
     onclick: (row: number, col: number, type: number) => void;
 }
@@ -12,7 +14,7 @@ const cancelEvt = (evt: React.MouseEvent<HTMLDivElement>) => {
 };
 
 export const BombShell:React.FC<BombShellProps> = (props: BombShellProps) => {
-    const {etat, x, y, onclick} = props;
+    const {etat, x, y, width, height, onclick} = props;
     let timer = -1;
     const [state] = React.useState({longPress: false});
     const shellClick = (evt: React.MouseEvent<HTMLDivElement>) => {
@@ -51,9 +53,11 @@ export const BombShell:React.FC<BombShellProps> = (props: BombShellProps) => {
         classes.push('shell-' + etat);
     }
     return <div className={classes.join(' ')} 
+        style={{width: width, height: height}}
         onMouseDown={initLongClick} 
         onMouseUp={shellClick} 
         onTouchStart={initTouch} 
         onTouchEnd={shellTouch} 
+        onDoubleClick={shellClick}
         onContextMenu={cancelEvt}>&nbsp;</div>;
 };

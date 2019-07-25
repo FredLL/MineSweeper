@@ -1,7 +1,7 @@
 .shell {
     display: inline-block;
-    width: 2rem;
-    height: 2rem;
+    min-width: 1rem;
+    min-height: 1rem;
     background-size: contain;
     background-color: lightblue;
     border-width: 0.2rem;

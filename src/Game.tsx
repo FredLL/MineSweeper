@@ -26,12 +26,20 @@ export const Game:React.FC<GameProps> = (props: GameProps) => {
             type: 'restart'
         });
     }
-    
+
+    const side = 'calc(' + (cols > rows ? 100/cols : 100/rows) + 'vmin - ' + (cols > rows ? 16/cols : 16/rows) + 'rem)';
+
     const game: JSX.Element[] = [];
     for (let iRow = 0; iRow < rows; iRow++) {
         const row:JSX.Element[] = [];
         for (let iCol = 0; iCol < cols; iCol++) {
-            row.push(<BombShell key={iRow+'-'+iCol} x={iRow} y={iCol} etat={state.gameMap[iRow*cols + iCol]} onclick={onShellClick}></BombShell>)
+            row.push(<BombShell key={iRow+'-'+iCol} 
+                        x={iRow} 
+                        y={iCol} 
+                        width={side}
+                        height={side}
+                        etat={state.gameMap[iRow*cols + iCol]} 
+                        onclick={onShellClick}></BombShell>)
         }
         game.push(<div key={iRow} className="row">{row}</div>);
     }
