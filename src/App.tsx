@@ -5,7 +5,7 @@ import {Game} from "./Game";
 
 let rows = 9;
 let cols = 9;
-let nbMines = 9;
+let nbMines = 10;
 
 const parsed = parse(location.search);
 if (parsed.rows && typeof parsed.rows == 'string') {

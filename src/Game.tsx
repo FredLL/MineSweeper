@@ -51,7 +51,7 @@ export const Game:React.FC<GameProps> = (props: GameProps) => {
     }
     
     return <>
-        <div>
+        <div className="top-row">
             <div className="nb-mines">{state.nbMines - nbFlags}</div>
             <div className="result"><button onClick={onRestartClick}>{lib}</button></div>
         </div>
