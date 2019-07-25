@@ -1,6 +1,6 @@
 import * as React from "react";
 import { BombShell } from "./BombShell";
-import { reduceGameMap, initMines } from "./reducer";
+import { reduceGameMap, initState, ActionType } from "./reducer";
 
 interface GameProps {
     cols: number;
@@ -9,19 +9,21 @@ interface GameProps {
 }
 export const Game:React.FC<GameProps> = (props: GameProps) => {
     const {rows, cols, nbMines} = props;
-    const [state, dispatch] = React.useReducer(reduceGameMap, {
-        gameMap: [],
-        mineMap: initMines(rows, cols, nbMines),
-        rows: rows,
-        cols: cols,
-        nbMines: nbMines
-    });
+    const [state, dispatch] = React.useReducer(reduceGameMap, initState(rows, cols, nbMines));
     const onShellClick = (row: number, col: number, type: number) => {
+        if (state.result) {
+            return;
+        }
         dispatch({
             type: 'click',
             col: col,
             row: row,
             which: type
+        } as ActionType);
+    }
+    const onRestartClick = () => {
+        dispatch({
+            type: 'restart'
         });
     }
     
@@ -39,6 +41,20 @@ export const Game:React.FC<GameProps> = (props: GameProps) => {
             nbFlags ++;
         }
     });
+    let lib = 'En cours';
+    if (state.result) {
+        lib = 'Perdu';
+    } else if (nbFlags == state.nbMines) {
+        if (!state.gameMap.some(val => typeof val === 'undefined')) {
+            lib = 'Gagné';
+        }
+    }
     
-    return <><div>{state.nbMines - nbFlags}</div>{game}</>;
+    return <>
+        <div>
+            <div className="nb-mines">{state.nbMines - nbFlags}</div>
+            <div className="result"><button onClick={onRestartClick}>{lib}</button></div>
+        </div>
+        {game}
+        </>;
 };

@@ -6,6 +6,11 @@
     background-color: lightblue;
     border-width: 0.2rem;
     border-style: outset;
+    user-select: none;
+}
+
+.row {
+    white-space: nowrap;
 }
 
 .shell-0 {

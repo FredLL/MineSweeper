@@ -1,8 +1,14 @@
-interface ActionType {
-  type: 'click',
+export interface ActionType {
+  type: 'click'|'restart'
+}
+
+interface ShellClickAction extends ActionType {
   col: number,
   row: number,
   which: number
+}
+
+interface RestartClickAction extends ActionType {
 }
 
 export interface StateType {
@@ -10,12 +16,14 @@ export interface StateType {
     mineMap: number[],
     cols: number,
     rows: number,
-    nbMines: number
+    nbMines: number,
+    result: boolean,
+    revealed: number
 }
 
 const baseDelta = [-1, 0, 1];
 
-export const initMines = (rows: number, cols: number, nbMines: number) => {
+const initMines = (rows: number, cols: number, nbMines: number) => {
   const mineMap: number[] = [];
   let iMines = 0;
   while (iMines < nbMines) {
@@ -27,6 +35,18 @@ export const initMines = (rows: number, cols: number, nbMines: number) => {
   }
   return mineMap;
 };
+
+export const initState = (rows: number, cols: number, nbMines: number):StateType => {
+  return {
+    gameMap: [],
+    mineMap: initMines(rows, cols, nbMines),
+    rows: rows,
+    cols: cols,
+    nbMines: nbMines,
+    result: false,
+    revealed: 0
+  };
+}
 
 const calculateAround = (row:number, col:number, mineMap: number[], rows: number, cols: number):number => {
   let calculatedVal = 0;
@@ -51,7 +71,7 @@ const executeAround = (row: number, col: number, rows: number, cols: number, exe
   });
 };
 
-const updateGameMap = (gameMap: number[], mineMap: number[], rows: number, cols: number, row: number, col: number, done: number[] = []) => {
+const updateGameMap = (gameMap: number[], mineMap: number[], rows: number, cols: number, row: number, col: number, done: number[] = []): boolean => {
   const p = row*cols+col;
   if (done.indexOf(p) > -1) {
     return;
@@ -60,7 +80,7 @@ const updateGameMap = (gameMap: number[], mineMap: number[], rows: number, cols:
   if (mineMap[p]) {
     // Mine
     gameMap[p] = 11;
-    return;
+    return true;
   }
   const res = calculateAround(row, col, mineMap, rows, cols);
   gameMap[p] = res;
@@ -72,38 +92,44 @@ const updateGameMap = (gameMap: number[], mineMap: number[], rows: number, cols:
     };
     executeAround(row, col, rows, cols, execOnGameMap);
   }
+  return false;
 };
 
 export const reduceGameMap = (state: StateType, action: ActionType):StateType => {
   if (action.type == 'click') {
-    const currentVal = state.gameMap[action.row*state.cols + action.col];
+    const clickAction = action as ShellClickAction;
+    const currentVal = state.gameMap[clickAction.row*state.cols + clickAction.col];
     const newState = (Object as any).assign({}, state);
-    if (!currentVal) {
-      if (action.which == 0) {
-        updateGameMap(newState.gameMap, newState.mineMap, newState.rows, newState.cols, action.row, action.col);
-      } else if (action.which == 2) {
-        newState.gameMap[action.row*newState.cols + action.col] = 10;
+    if (typeof currentVal === 'undefined') {
+      if (clickAction.which == 0) {
+        if (updateGameMap(newState.gameMap, newState.mineMap, newState.rows, newState.cols, clickAction.row, clickAction.col)) {
+          newState.result = true;
+        }
+      } else if (clickAction.which == 2) {
+        newState.gameMap[clickAction.row * newState.cols + clickAction.col] = 10;
       }
-    } else if (currentVal == 10 && action.which == 2) {
-      newState.gameMap[action.row*newState.cols + action.col] = undefined;
-    } else if (currentVal && action.which == 1) {
+    } else if (currentVal == 10 && clickAction.which == 2) {
+      newState.gameMap[clickAction.row * newState.cols + clickAction.col] = undefined;
+    } else if (currentVal && clickAction.which == 1) {
       let calculatedVal = 0;
       const execCalculateVal = (rows: number, cols: number, newRow: number, newCol: number) => {
         if (newState.gameMap[newRow * cols + newCol] == 10) {
           calculatedVal++;
         }
       };
-      executeAround(action.row, action.col, state.rows, state.cols, execCalculateVal);
+      executeAround(clickAction.row, clickAction.col, state.rows, state.cols, execCalculateVal);
       if (currentVal == calculatedVal) {
         const execUpdateGameMap = (rows: number, cols: number, newRow: number, newCol: number) => {
           if (typeof newState.gameMap[newRow * cols + newCol] == 'undefined') {
             updateGameMap(newState.gameMap, state.mineMap, rows, cols, newRow, newCol);
           }
         };
-        executeAround(action.row, action.col, state.rows, state.cols, execUpdateGameMap);
+        executeAround(clickAction.row, clickAction.col, state.rows, state.cols, execUpdateGameMap);
       }
     }
     return newState;
+  } else if (action.type == 'restart') {
+    return initState(state.rows, state.cols, state.nbMines);
   }
   return state;
 }
