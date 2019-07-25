@@ -10,6 +10,7 @@ interface GameProps {
 export const Game:React.FC<GameProps> = (props: GameProps) => {
     const {rows, cols, nbMines} = props;
     const [state, dispatch] = React.useReducer(reduceGameMap, initState(rows, cols, nbMines));
+
     const onShellClick = (row: number, col: number, type: number) => {
         if (state.result) {
             return;
@@ -27,7 +28,7 @@ export const Game:React.FC<GameProps> = (props: GameProps) => {
         });
     }
 
-    const side = 'calc(' + (cols > rows ? 100/cols : 100/rows) + 'vmin - ' + (cols > rows ? 16/cols : 16/rows) + 'rem)';
+    const side = 'calc(' + (100/rows) + 'vmin - ' + (10/rows) + 'rem)';
 
     const game: JSX.Element[] = [];
     for (let iRow = 0; iRow < rows; iRow++) {
