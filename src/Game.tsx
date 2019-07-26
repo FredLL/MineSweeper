@@ -1,13 +1,14 @@
 import * as React from "react";
 import { BombShell } from "./BombShell";
 import { reduceGameMap, initState, ActionType, Result } from "./reducer";
+import { Counter, CounterAction } from "./Counter";
 
 interface GameProps {
     cols: number;
     rows: number;
     nbMines: number;
 }
-export const Game:React.FC<GameProps> = (props: GameProps) => {
+export const Game:React.FC<GameProps> = (props) => {
     const {rows, cols, nbMines} = props;
     const [state, dispatch] = React.useReducer(reduceGameMap, initState(rows, cols, nbMines));
 
@@ -45,21 +46,25 @@ export const Game:React.FC<GameProps> = (props: GameProps) => {
         game.push(<div key={iRow} className="row">{row}</div>);
     }
     let lib = 'En cours';
+    let counterAction: CounterAction = undefined;
     switch (state.result) {
         case Result.Bombed:
-            window.clearInterval(state.timer);
             lib = 'Perdu';
+            counterAction = CounterAction.Stop;
             break;
         case Result.Finished:
-            window.clearInterval(state.timer);
+            counterAction = CounterAction.Stop;
             lib = 'Gagné';
+            break;
+        case Result.WiP:
+            counterAction = CounterAction.Start;
             break;
     }
     return <>
         <div className="top-row">
-            <div className="nb-mines">{state.nbFlags ? state.nbMines - state.nbFlags : state.nbMines}</div>
+            <Counter value={state.nbFlags ? state.nbMines - state.nbFlags : state.nbMines} nbDigits={2} extendsWithValue={true} />
             <div className="result"><button onClick={onRestartClick}>{lib}</button></div>
-            <div id="timer" className="timer"></div>
+            <Counter nbDigits={3} extendsWithValue={true} action={counterAction} />
         </div>
         {game}
         </>;

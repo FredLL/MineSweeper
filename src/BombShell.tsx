@@ -13,7 +13,7 @@ const cancelEvt = (evt: React.MouseEvent<HTMLDivElement>) => {
     evt.preventDefault();
 };
 
-export const BombShell:React.FC<BombShellProps> = (props: BombShellProps) => {
+export const BombShell:React.FC<BombShellProps> = (props) => {
     const {etat, x, y, width, height, onclick} = props;
     let timer = -1;
     const [state] = React.useState({longPress: false});

@@ -99,10 +99,50 @@
     grid-column: 3;
 }
 
-.timer {
-    text-align: right
-}
-
 .result {
     text-align: center;
+}
+
+.counter-digit {
+    display: inline-block;
+    width: 1rem;
+    height: 2rem;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: black;
+    /* border-width: 0.2rem;
+    border-style: inset; */
+    user-select: none;
+}
+
+.counter-digit-0 {
+    background-image: url(A_num_0.svg);
+}
+.counter-digit-1 {
+    background-image: url(A_num_1.svg);
+}
+.counter-digit-2 {
+    background-image: url(A_num_2.svg);
+}
+.counter-digit-3 {
+    background-image: url(A_num_3.svg);
+}
+.counter-digit-4 {
+    background-image: url(A_num_4.svg);
+}
+.counter-digit-5 {
+    background-image: url(A_num_5.svg);
+}
+.counter-digit-6 {
+    background-image: url(A_num_6.svg);
+}
+.counter-digit-7 {
+    background-image: url(A_num_7.svg);
+}
+.counter-digit-8 {
+    background-image: url(A_num_8.svg);
+}
+.counter-digit-9 {
+    background-image: url(A_num_9.svg);
 }

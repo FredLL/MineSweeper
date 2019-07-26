@@ -1,5 +1,5 @@
 export interface ActionType {
-  type: 'click'|'restart'|'timer'
+  type: 'click'|'restart'
 }
 
 interface ShellClickAction extends ActionType {
@@ -15,8 +15,6 @@ export interface StateType {
     rows: number,
     nbMines: number,
     result?: Result,
-    timer?: number,
-    startTime?: number,
     nbFlags?: number
 }
 
@@ -55,23 +53,28 @@ const calculateAround = (row:number, col:number, mineMap: number[], rows: number
   let calculatedVal = 0;
   const execCalculateAround = (rows: number, cols: number, newRow: number, newCol: number) => {
     calculatedVal += mineMap[cols * newRow + newCol]?1:0;
+    return false;
   };
   executeAround(row, col, rows, cols, execCalculateAround);
   return calculatedVal;
 };
 
-const executeAround = (row: number, col: number, rows: number, cols: number, exec: (rows: number, cols: number, newRow: number, newCol: number)=>void) => {
+const executeAround = (row: number, col: number, rows: number, cols: number, exec: (rows: number, cols: number, newRow: number, newCol: number)=>boolean):boolean => {
+  let res = false;
   baseDelta.forEach(deltaCol => {
     baseDelta.forEach(deltaRow => {
       if (deltaCol != 0 || deltaRow != 0) {
         const newRow = row + deltaRow;
         const newCol = col + deltaCol;
         if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
-          exec(rows, cols, newRow, newCol);
+          if (exec(rows, cols, newRow, newCol)) {
+            res = true;
+          }
         }
       }
     });
   });
+  return res;
 };
 
 const updateGameMap = (gameMap: number[], mineMap: number[], rows: number, cols: number, row: number, col: number, done: number[] = []): boolean => {
@@ -101,31 +104,34 @@ const updateGameMap = (gameMap: number[], mineMap: number[], rows: number, cols:
   if (res == 0) {
     const execOnGameMap = (rows: number, cols: number, newRow: number, newCol: number) => {
       if (typeof gameMap[newRow*cols + newCol] == 'undefined') {
-        updateGameMap(gameMap, mineMap, rows, cols, newRow, newCol, done);
+        return updateGameMap(gameMap, mineMap, rows, cols, newRow, newCol, done);
       }
+      return false;
     };
-    executeAround(row, col, rows, cols, execOnGameMap);
+    return executeAround(row, col, rows, cols, execOnGameMap);
   }
   return false;
 };
 
 const checkLastClick = (state: StateType) => {
-  state.result = Result.WiP;
-  state.nbFlags = 0;
-  state.gameMap.forEach(element => {
-    if (element == 10) {
-      state.nbFlags ++;
-    }
-  });
-  if (state.nbFlags == state.nbMines) {
-    state.result = Result.Finished;
-    for (let i = 0; i < state.gameMap.length; i++) {
-      if (typeof state.gameMap[i] === 'undefined') {
-        state.result = Result.WiP;
-        break;
+  if (state.result != Result.Bombed) {
+    state.result = Result.WiP;
+    state.nbFlags = 0;
+    state.gameMap.forEach(element => {
+      if (element == 10) {
+        state.nbFlags ++;
+      }
+    });
+    if (state.nbFlags == state.nbMines) {
+      state.result = Result.Finished;
+      for (let i = 0; i < state.gameMap.length; i++) {
+        if (typeof state.gameMap[i] === 'undefined') {
+          state.result = Result.WiP;
+          break;
+        }
       }
     }
-  }
+    }
 };
 
 export const reduceGameMap = (state: StateType, action: ActionType):StateType => {
@@ -139,17 +145,10 @@ export const reduceGameMap = (state: StateType, action: ActionType):StateType =>
         if (newState.mineMap.length == 0) {
           // first click
           newState.mineMap = initMines(state.rows, state.cols, state.nbMines, p);
-          const startTime = new Date().getTime();
-          newState.timer = window.setInterval(() => {
-            const timerElt = document.getElementById('timer');
-            if (timerElt) {
-                timerElt.innerHTML = '' + Math.floor((new Date().getTime() - startTime) / 1000);
-            }
-          }, 1000);
+          newState.result = Result.WiP;
         }
         if (updateGameMap(newState.gameMap, newState.mineMap, state.rows, state.cols, clickAction.row, clickAction.col)) {
           // click on mine
-          window.clearInterval(newState.timer);
           newState.result = Result.Bombed;
         } else {
           // is this the last click ?
@@ -170,26 +169,25 @@ export const reduceGameMap = (state: StateType, action: ActionType):StateType =>
         if (newState.gameMap[newRow * cols + newCol] == 10) {
           calculatedVal++;
         }
+        return false;
       };
       executeAround(clickAction.row, clickAction.col, state.rows, state.cols, execCalculateVal);
       if (currentVal == calculatedVal) {
         const execUpdateGameMap = (rows: number, cols: number, newRow: number, newCol: number) => {
           if (typeof newState.gameMap[newRow * cols + newCol] == 'undefined') {
-            updateGameMap(newState.gameMap, state.mineMap, rows, cols, newRow, newCol);
+            return updateGameMap(newState.gameMap, state.mineMap, rows, cols, newRow, newCol);
           }
         };
-        executeAround(clickAction.row, clickAction.col, state.rows, state.cols, execUpdateGameMap);
+        if (executeAround(clickAction.row, clickAction.col, state.rows, state.cols, execUpdateGameMap)) {
+          // click on mine
+          newState.result = Result.Bombed;
+        }
       }
       // is this the last click ?
       checkLastClick(newState);
     }
     return newState;
   } else if (action.type == 'restart') {
-    window.clearInterval(state.timer);
-    const timerElt = document.getElementById('timer');
-    if (timerElt) {
-      timerElt.innerHTML = '0';
-    }
     return initState(state.rows, state.cols, state.nbMines);
   }
   return state;
