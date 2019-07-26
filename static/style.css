@@ -79,14 +79,16 @@
 
 .top-row {
     display: grid; 
-    grid-template-columns: 50% 50%;
-    min-height: 2rem
+    grid-template-columns: 33% 1fr 33%;
+    min-height: 2rem;
+    width: calc(100vmin - 10rem);
 }
 
 .footer {
     display: grid; 
     grid-template-columns: 33% 1fr 33%; 
-    min-height: 3.5rem
+    min-height: 3.5rem;
+    width: calc(100vmin - 10rem);
 }
 
 .footer-elt {
@@ -95,4 +97,12 @@
 
 .elt-3 {
     grid-column: 3;
+}
+
+.timer {
+    text-align: right
+}
+
+.result {
+    text-align: center;
 }

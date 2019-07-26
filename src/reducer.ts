@@ -1,5 +1,5 @@
 export interface ActionType {
-  type: 'click'|'restart'
+  type: 'click'|'restart'|'timer'
 }
 
 interface ShellClickAction extends ActionType {
@@ -8,17 +8,22 @@ interface ShellClickAction extends ActionType {
   which: number
 }
 
-interface RestartClickAction extends ActionType {
-}
-
 export interface StateType {
     gameMap: number[],
     mineMap: number[],
     cols: number,
     rows: number,
     nbMines: number,
-    result: boolean,
-    revealed: number
+    result?: Result,
+    timer?: number,
+    startTime?: number,
+    nbFlags?: number
+}
+
+export enum Result {
+  Bombed,
+  Finished,
+  WiP
 }
 
 const baseDelta = [-1, 0, 1];
@@ -42,9 +47,7 @@ export const initState = (rows: number, cols: number, nbMines: number):StateType
     mineMap: [],
     rows: rows,
     cols: cols,
-    nbMines: nbMines,
-    result: false,
-    revealed: 0
+    nbMines: nbMines
   };
 }
 
@@ -106,25 +109,61 @@ const updateGameMap = (gameMap: number[], mineMap: number[], rows: number, cols:
   return false;
 };
 
+const checkLastClick = (state: StateType) => {
+  state.result = Result.WiP;
+  state.nbFlags = 0;
+  state.gameMap.forEach(element => {
+    if (element == 10) {
+      state.nbFlags ++;
+    }
+  });
+  if (state.nbFlags == state.nbMines) {
+    state.result = Result.Finished;
+    for (let i = 0; i < state.gameMap.length; i++) {
+      if (typeof state.gameMap[i] === 'undefined') {
+        state.result = Result.WiP;
+        break;
+      }
+    }
+  }
+};
+
 export const reduceGameMap = (state: StateType, action: ActionType):StateType => {
   if (action.type == 'click') {
     const clickAction = action as ShellClickAction;
     const p = clickAction.row * state.cols + clickAction.col;
     const currentVal = state.gameMap[p];
-    const newState = (Object as any).assign({}, state);
+    const newState = (Object as any).assign({}, state) as StateType;
     if (typeof currentVal === 'undefined') {
       if (clickAction.which == 0) {
         if (newState.mineMap.length == 0) {
-          newState.mineMap = initMines(newState.rows, newState.cols, newState.nbMines, p);
+          // first click
+          newState.mineMap = initMines(state.rows, state.cols, state.nbMines, p);
+          const startTime = new Date().getTime();
+          newState.timer = window.setInterval(() => {
+            const timerElt = document.getElementById('timer');
+            if (timerElt) {
+                timerElt.innerHTML = '' + Math.floor((new Date().getTime() - startTime) / 1000);
+            }
+          }, 1000);
         }
-        if (updateGameMap(newState.gameMap, newState.mineMap, newState.rows, newState.cols, clickAction.row, clickAction.col)) {
-          newState.result = true;
+        if (updateGameMap(newState.gameMap, newState.mineMap, state.rows, state.cols, clickAction.row, clickAction.col)) {
+          // click on mine
+          window.clearInterval(newState.timer);
+          newState.result = Result.Bombed;
+        } else {
+          // is this the last click ?
+          checkLastClick(newState);
         }
       } else if (clickAction.which == 2) {
         newState.gameMap[p] = 10;
+        // is this the last click ?
+        checkLastClick(newState);
       }
     } else if (currentVal == 10 && clickAction.which == 2) {
       newState.gameMap[p] = undefined;
+      // is this the last click ?
+      checkLastClick(newState);
     } else if (currentVal && clickAction.which == 1) {
       let calculatedVal = 0;
       const execCalculateVal = (rows: number, cols: number, newRow: number, newCol: number) => {
@@ -141,9 +180,16 @@ export const reduceGameMap = (state: StateType, action: ActionType):StateType =>
         };
         executeAround(clickAction.row, clickAction.col, state.rows, state.cols, execUpdateGameMap);
       }
+      // is this the last click ?
+      checkLastClick(newState);
     }
     return newState;
   } else if (action.type == 'restart') {
+    window.clearInterval(state.timer);
+    const timerElt = document.getElementById('timer');
+    if (timerElt) {
+      timerElt.innerHTML = '0';
+    }
     return initState(state.rows, state.cols, state.nbMines);
   }
   return state;
