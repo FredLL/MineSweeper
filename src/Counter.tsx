@@ -65,7 +65,7 @@ export const Counter:React.FC<CounterProps> = (props) => {
     }
     const digitElts: React.ReactElement[] = [];
     for (let i = 1; i <= nbDigits; i++) {
-        digitElts.push(<div key={'CounterDigit-' + i} className={'counter-digit counter-digit-' + (value % Math.pow(10, i))}>&nbsp;</div>);
+        digitElts.push(<div key={'CounterDigit-' + i} className={'counter-digit counter-digit-' + (value % 10)}>&nbsp;</div>);
         value = Math.floor(value / 10);
     }
 
