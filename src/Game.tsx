@@ -7,11 +7,12 @@ interface GameProps {
     cols: number;
     rows: number;
     nbMines: number;
+    longClickDelay?: number;
 }
 export const Game:React.FC<GameProps> = (props) => {
     const {rows, cols, nbMines} = props;
     const [state, dispatch] = React.useReducer(reduceGameMap, initState(rows, cols, nbMines));
-
+    const longClickDelay = props.longClickDelay?props.longClickDelay:1000;
     const onShellClick = (row: number, col: number, type: number) => {
         if (state.result == Result.Bombed) {
             return;
@@ -22,12 +23,12 @@ export const Game:React.FC<GameProps> = (props) => {
             row: row,
             which: type
         } as ActionType);
-    }
+    };
     const onRestartClick = () => {
         dispatch({
             type: 'restart'
         });
-    }
+    };
 
     const side = 'calc(' + (100/rows) + 'vmin - ' + (10/rows) + 'rem)';
 
@@ -41,6 +42,7 @@ export const Game:React.FC<GameProps> = (props) => {
                         width={side}
                         height={side}
                         etat={state.gameMap[iRow*cols + iCol]} 
+                        longClickDelay={longClickDelay}
                         onclick={onShellClick}></BombShell>)
         }
         game.push(<div key={iRow} className="row">{row}</div>);

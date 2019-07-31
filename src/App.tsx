@@ -6,6 +6,7 @@ import {Game} from "./Game";
 let rows = 9;
 let cols = 9;
 let nbMines = 10;
+let longClickDelay:number = undefined;
 
 const parsed = parse(location.search);
 if (parsed.rows && typeof parsed.rows == 'string') {
@@ -23,8 +24,13 @@ if (parsed.nbMines && typeof parsed.nbMines == 'string') {
         nbMines = parseInt(parsed.nbMines);
     } catch (e) {}
 }
+if (parsed.longClickDelay && typeof parsed.longClickDelay == 'string') {
+    try {
+        longClickDelay = parseInt(parsed.longClickDelay);
+    } catch (e) {}
+}
 
 ReactDOM.render(
-    <Game rows={rows} cols={cols} nbMines={nbMines} />,
+    <Game rows={rows} cols={cols} nbMines={nbMines} longClickDelay={longClickDelay} />,
     document.getElementById('MineSweeper')
 );
