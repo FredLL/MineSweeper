@@ -30,7 +30,7 @@ const initMines = (rows: number, cols: number, nbMines: number, except: number) 
   const mineMap: number[] = [];
   let iMines = 0;
   while (iMines < nbMines) {
-    const newMine = Math.round(Math.random() * rows * cols);
+    const newMine = Math.round(Math.random() * (rows * cols - 1));
     if (newMine != except && !mineMap[newMine]) {
       mineMap[newMine] = 1;
       iMines++;
