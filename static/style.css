@@ -3,10 +3,21 @@
     min-width: 1rem;
     min-height: 1rem;
     background-size: contain;
-    background-color: lightblue;
     border-width: 0.2rem;
     border-style: outset;
     user-select: none;
+}
+
+.shell-play {
+    background-color: lightblue;
+}
+
+.shell-loose {
+    background-color: lightgrey;
+}
+
+.shell-win {
+    background-color: lightpink;
 }
 
 .row {
@@ -82,6 +93,7 @@
     grid-template-columns: 33% 1fr 33%;
     min-height: 2rem;
     width: calc(100vmin - 10rem);
+    padding-bottom: 0.1rem;
 }
 
 .footer {
@@ -145,4 +157,26 @@
 }
 .counter-digit-9 {
     background-image: url(A_Num_9.svg);
+}
+
+.action {
+    width: 2rem;
+    height: 2rem;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: lightgray;
+}
+
+.action-play {
+    background-image: url(play.svg);
+}
+
+.action-win {
+    background-image: url(win.svg);
+}
+
+
+.action-loose {
+    background-image: url(loose.svg);
 }

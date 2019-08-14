@@ -6,6 +6,7 @@ interface BombShellProps {
     width: string;
     height: string;
     etat: number;
+    gameState: string;
     longClickDelay: number;
     onclick: (row: number, col: number, type: number) => void;
 }
@@ -15,7 +16,7 @@ const cancelEvt = (evt: React.MouseEvent<HTMLDivElement>) => {
 };
 
 export const BombShell:React.FC<BombShellProps> = (props) => {
-    const {etat, x, y, width, height, longClickDelay, onclick} = props;
+    const {etat, gameState, x, y, width, height, longClickDelay, onclick} = props;
     let timer = -1;
     const [state] = React.useState({longPress: false});
     const shellClick = (evt: React.MouseEvent<HTMLDivElement>) => {
@@ -56,6 +57,7 @@ export const BombShell:React.FC<BombShellProps> = (props) => {
     if (typeof etat !== 'undefined') {
         classes.push('shell-' + etat);
     }
+    classes.push('shell-' + gameState);
     return <div className={classes.join(' ')} 
         style={{width: width, height: height}}
         onMouseDown={initLongClick} 

@@ -32,6 +32,21 @@ export const Game:React.FC<GameProps> = (props) => {
 
     const side = 'calc(' + (100/rows) + 'vmin - ' + (10/rows) + 'rem)';
 
+    let lib = 'play';
+    let counterAction: CounterAction = undefined;
+    switch (state.result) {
+        case Result.Bombed:
+            lib = 'loose';
+            counterAction = CounterAction.Stop;
+            break;
+        case Result.Finished:
+            counterAction = CounterAction.Stop;
+            lib = 'win';
+            break;
+        case Result.WiP:
+            counterAction = CounterAction.Start;
+            break;
+    }
     const game: JSX.Element[] = [];
     for (let iRow = 0; iRow < rows; iRow++) {
         const row:JSX.Element[] = [];
@@ -42,30 +57,16 @@ export const Game:React.FC<GameProps> = (props) => {
                         width={side}
                         height={side}
                         etat={state.gameMap[iRow*cols + iCol]} 
+                        gameState={lib}
                         longClickDelay={longClickDelay}
                         onclick={onShellClick}></BombShell>)
         }
         game.push(<div key={iRow} className="row">{row}</div>);
     }
-    let lib = 'En cours';
-    let counterAction: CounterAction = undefined;
-    switch (state.result) {
-        case Result.Bombed:
-            lib = 'Perdu';
-            counterAction = CounterAction.Stop;
-            break;
-        case Result.Finished:
-            counterAction = CounterAction.Stop;
-            lib = 'Gagné';
-            break;
-        case Result.WiP:
-            counterAction = CounterAction.Start;
-            break;
-    }
     return <>
         <div className="top-row">
             <Counter value={state.nbFlags ? state.nbMines - state.nbFlags : state.nbMines} nbDigits={2} extendsWithValue={true} />
-            <div className="result"><button onClick={onRestartClick}>{lib}</button></div>
+            <div className="result"><button className={'action action-' + lib} onClick={onRestartClick}>&nbsp;</button></div>
             <Counter nbDigits={3} extendsWithValue={true} action={counterAction} />
         </div>
         {game}
