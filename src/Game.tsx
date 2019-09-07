@@ -46,6 +46,9 @@ export const Game:React.FC<GameProps> = (props) => {
         case Result.WiP:
             counterAction = CounterAction.Start;
             break;
+        case Result.Restart:
+            counterAction = CounterAction.Restart;
+            break;
     }
     const game: JSX.Element[] = [];
     for (let iRow = 0; iRow < rows; iRow++) {
@@ -65,9 +68,9 @@ export const Game:React.FC<GameProps> = (props) => {
     }
     return <>
         <div className="top-row">
-            <Counter value={state.nbFlags ? state.nbMines - state.nbFlags : state.nbMines} nbDigits={2} extendsWithValue={true} />
+            <Counter id="mine-counter" value={state.nbFlags ? state.nbMines - state.nbFlags : state.nbMines} nbDigits={2} extendsWithValue={true} />
             <div className="result"><button className={'action action-' + lib} onClick={onRestartClick}>&nbsp;</button></div>
-            <Counter nbDigits={3} extendsWithValue={true} action={counterAction} />
+            <Counter id="sec-counter" nbDigits={3} extendsWithValue={true} action={counterAction} />
         </div>
         {game}
         </>;

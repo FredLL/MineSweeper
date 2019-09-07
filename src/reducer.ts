@@ -21,7 +21,8 @@ export interface StateType {
 export enum Result {
   Bombed,
   Finished,
-  WiP
+  WiP,
+  Restart
 }
 
 const baseDelta = [-1, 0, 1];
@@ -39,13 +40,14 @@ const initMines = (rows: number, cols: number, nbMines: number, except: number) 
   return mineMap;
 };
 
-export const initState = (rows: number, cols: number, nbMines: number):StateType => {
+export const initState = (rows: number, cols: number, nbMines: number, restart?: boolean):StateType => {
   return {
     gameMap: [],
     mineMap: [],
     rows: rows,
     cols: cols,
-    nbMines: nbMines
+    nbMines: nbMines,
+    result: restart? Result.Restart: undefined
   };
 }
 
@@ -188,7 +190,7 @@ export const reduceGameMap = (state: StateType, action: ActionType):StateType =>
     }
     return newState;
   } else if (action.type == 'restart') {
-    return initState(state.rows, state.cols, state.nbMines);
+    return initState(state.rows, state.cols, state.nbMines, true);
   }
   return state;
 }

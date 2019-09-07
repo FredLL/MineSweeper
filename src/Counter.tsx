@@ -2,11 +2,12 @@ import * as React from "react";
 
 export enum CounterAction {
     Start,
-    Stop
+    Stop,
+    Restart
 }
 
 interface CounterProps {
-    id?: string;
+    id: string;
     value?: number;
     nbDigits?: number;
     digitWidth?: number|string;
@@ -18,16 +19,15 @@ interface CounterProps {
 
 interface CounterState {
     action?: CounterAction;
-    currentValue?: number;
+    value?: number;
 }
-
-let counterTimer: number = undefined;
+const counterTimers: Map<string, number> = new Map();
 
 export const Counter:React.FC<CounterProps> = (props) => {
-    let {value, nbDigits, digitHeight, digitWidth, extendsWithValue, action, interval} = props;
-    const [state, setCounterState] = React.useState<CounterState>({});
+    let {id, value, nbDigits, digitHeight, digitWidth, extendsWithValue, action, interval} = props;
+    const [counterState, setCounterState] = React.useState({} as CounterState);
     if (typeof value === 'undefined') {
-        value = state.currentValue;
+        value = counterState.value;
     }
     if (typeof value === 'undefined') {
         value = 0;
@@ -40,27 +40,39 @@ export const Counter:React.FC<CounterProps> = (props) => {
             nbDigits++;
         }
     }
-    if (typeof action !== 'undefined' && action != state.action) {
+    if (typeof action !== 'undefined' && action != counterState.action) {
         switch (action) {
             case CounterAction.Start:
+              {  
                 if (!interval) {
                     interval = 1000;
                 }
                 const startTime = new Date().getTime();
-                counterTimer = window.setInterval(() => setCounterState({action: action, currentValue: Math.floor((new Date().getTime() - startTime) / interval)}), interval);
+                const counterTimer = counterTimers.get(id);
+                if (counterTimer) {
+                    window.clearInterval(counterTimer);
+                }
+                counterTimers.set(id, window.setInterval(() => setCounterState({action: action, value: Math.floor((new Date().getTime() - startTime) / interval)}), interval));
                 setCounterState({
-                    action: CounterAction.Start,
-                    currentValue: 0
+                    action: action,
+                    value: 0
                 });
                 break;
+              }  
+            case CounterAction.Restart:
             case CounterAction.Stop:
-                window.clearInterval(counterTimer);
-                counterTimer = undefined;
+              {
+                const counterTimer = counterTimers.get(id);
+                if (counterTimer) {
+                  window.clearInterval(counterTimer);
+                  counterTimers.delete(id);
+                }    
                 setCounterState({
-                    action: CounterAction.Stop,
-                    currentValue: state.currentValue
+                    action: action,
+                    value: action == CounterAction.Stop? counterState.value: 0
                 });
                 break;
+              }  
         }
     }
     const digitElts: React.ReactElement[] = [];
