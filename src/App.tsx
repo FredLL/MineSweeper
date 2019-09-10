@@ -3,6 +3,19 @@ import * as ReactDOM from "react-dom";
 import {parse} from "query-string";
 import {Game} from "./Game";
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js').then(registration => {
+      // tslint:disable:no-console
+      console.log('SW registered: ', registration);
+    }).catch(registrationError => {
+      console.log('SW registration failed: ', registrationError);
+    });
+  });
+} else {
+    console.log('SW not available');
+}
+
 let rows = 9;
 let cols = 9;
 let nbMines = 10;

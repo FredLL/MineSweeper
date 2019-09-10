@@ -3,9 +3,12 @@ const webpack = require("webpack");
 const Visualizer = require('webpack-visualizer-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+//const WebpackManifestPlugin = require('webpack-manifest-plugin');
+const path = require('path');
+const {GenerateSW} = require('workbox-webpack-plugin');
 
 module.exports = {
-    mode: 'production', //'development',
+    mode: 'development', //'production',
     entry: [
         "./src/App.tsx"
     ],
@@ -61,6 +64,13 @@ module.exports = {
         ]),
         new HtmlWebpackPlugin({
             template: 'static/index.html'
+        }),
+//        new WebpackManifestPlugin(),
+        new GenerateSW({
+            // these options encourage the ServiceWorkers to get in there fast
+            // and not allow any straggling "old" SWs to hang around
+            clientsClaim: true,
+            skipWaiting: true
         }),
         new Visualizer()
     ]
