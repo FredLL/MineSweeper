@@ -121,6 +121,7 @@ const updateGameMap = (gameMap: number[], mineMap: number[], rows: number, cols:
       const newPos = shellsToUpdate.pop();
       const newP = newPos.row*cols+newPos.col;
       if (done.indexOf(newP) == -1) {
+        done.push(newP);
         const res = calculateAround(newPos.row, newPos.col, mineMap, rows, cols);
         gameMap[newP] = res;
         if (res == 0) {
