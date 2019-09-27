@@ -63,26 +63,30 @@ const calculateAround = (row:number, col:number, mineMap: number[], rows: number
 
 const executeAround = (row: number, col: number, rows: number, cols: number, exec: (rows: number, cols: number, newRow: number, newCol: number)=>boolean):boolean => {
   let res = false;
-  baseDelta.forEach(deltaCol => {
-    baseDelta.forEach(deltaRow => {
-      if (deltaCol != 0 || deltaRow != 0) {
-        const newRow = row + deltaRow;
-        const newCol = col + deltaCol;
-        if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
-          if (exec(rows, cols, newRow, newCol)) {
-            res = true;
+  try {
+    baseDelta.forEach(deltaCol => {
+      baseDelta.forEach(deltaRow => {
+        if (deltaCol != 0 || deltaRow != 0) {
+          const newRow = row + deltaRow;
+          const newCol = col + deltaCol;
+          if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
+            if (exec(rows, cols, newRow, newCol)) {
+              res = true;
+            }
           }
         }
-      }
+      });
     });
-  });
+  } catch (e) {
+    console.error(e.message);
+  }
   return res;
 };
 
 const updateGameMap = (gameMap: number[], mineMap: number[], rows: number, cols: number, row: number, col: number, done: number[] = []): boolean => {
   const p = row*cols+col;
   if (done.indexOf(p) > -1) {
-    return;
+    return false;
   }
   done.push(p);
   if (mineMap[p]) {
@@ -104,13 +108,27 @@ const updateGameMap = (gameMap: number[], mineMap: number[], rows: number, cols:
   const res = calculateAround(row, col, mineMap, rows, cols);
   gameMap[p] = res;
   if (res == 0) {
+    const shellsToUpdate:Array<{row: number,col: number}> = [];
     const execOnGameMap = (rows: number, cols: number, newRow: number, newCol: number) => {
       if (typeof gameMap[newRow*cols + newCol] == 'undefined') {
-        return updateGameMap(gameMap, mineMap, rows, cols, newRow, newCol, done);
+        shellsToUpdate.push({row: newRow, col: newCol});
       }
       return false;
     };
-    return executeAround(row, col, rows, cols, execOnGameMap);
+    executeAround(row, col, rows, cols, execOnGameMap);
+    let res = false;
+    while (shellsToUpdate.length) {
+      const newPos = shellsToUpdate.pop();
+      const newP = newPos.row*cols+newPos.col;
+      if (done.indexOf(newP) == -1) {
+        const res = calculateAround(newPos.row, newPos.col, mineMap, rows, cols);
+        gameMap[newP] = res;
+        if (res == 0) {
+          executeAround(newPos.row, newPos.col, rows, cols, execOnGameMap);
+        }
+      }
+    }
+    return res;
   }
   return false;
 };
