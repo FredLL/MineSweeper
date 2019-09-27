@@ -88,6 +88,16 @@
     background-color: orange;
 }
 
+.shell-blink {
+    animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 0.6;
+    }
+}
+
 .top-row {
     display: grid; 
     grid-template-columns: 33% 1fr 33%;

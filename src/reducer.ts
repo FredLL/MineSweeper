@@ -15,7 +15,8 @@ export interface StateType {
     rows: number,
     nbMines: number,
     result?: Result,
-    nbFlags?: number
+    nbFlags?: number,
+    nonTurnedShellShowDelay: number
 }
 
 export enum Result {
@@ -40,14 +41,15 @@ const initMines = (rows: number, cols: number, nbMines: number, except: number) 
   return mineMap;
 };
 
-export const initState = (rows: number, cols: number, nbMines: number, restart?: boolean):StateType => {
+export const initState = (rows: number, cols: number, nbMines: number, restart: boolean, nonTurnedShellShowDelay: number):StateType => {
   return {
     gameMap: [],
     mineMap: [],
     rows: rows,
     cols: cols,
     nbMines: nbMines,
-    result: restart? Result.Restart: undefined
+    result: restart? Result.Restart: undefined,
+    nonTurnedShellShowDelay: nonTurnedShellShowDelay
   };
 }
 
@@ -116,7 +118,6 @@ const updateGameMap = (gameMap: number[], mineMap: number[], rows: number, cols:
       return false;
     };
     executeAround(row, col, rows, cols, execOnGameMap);
-    let res = false;
     while (shellsToUpdate.length) {
       const newPos = shellsToUpdate.pop();
       const newP = newPos.row*cols+newPos.col;
@@ -129,7 +130,6 @@ const updateGameMap = (gameMap: number[], mineMap: number[], rows: number, cols:
         }
       }
     }
-    return res;
   }
   return false;
 };
@@ -155,7 +155,16 @@ const checkLastClick = (state: StateType) => {
     }
 };
 
+let timer: number;
+
 export const reduceGameMap = (state: StateType, action: ActionType):StateType => {
+  if (timer) {
+    window.clearTimeout(timer);
+    const shells = document.querySelectorAll('.shell-blink');
+    shells.forEach(shellElt => {
+      shellElt.classList.remove('shell-blink');
+    });
+  }
   if (action.type == 'click') {
     const clickAction = action as ShellClickAction;
     const p = clickAction.row * state.cols + clickAction.col;
@@ -207,9 +216,19 @@ export const reduceGameMap = (state: StateType, action: ActionType):StateType =>
       // is this the last click ?
       checkLastClick(newState);
     }
+    if (newState.nonTurnedShellShowDelay > 0 && newState.result == Result.WiP) {
+      timer = window.setTimeout(() => {
+        const shells = document.querySelectorAll('.shell');
+        shells.forEach(shellElt => {
+          if (!shellElt.classList.contains('shell-id')) {
+            shellElt.classList.add('shell-blink')
+          }
+        });
+      }, newState.nonTurnedShellShowDelay);
+    }
     return newState;
   } else if (action.type == 'restart') {
-    return initState(state.rows, state.cols, state.nbMines, true);
+    return initState(state.rows, state.cols, state.nbMines, true, state.nonTurnedShellShowDelay);
   }
   return state;
 }

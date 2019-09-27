@@ -20,6 +20,7 @@ let rows = 9;
 let cols = 9;
 let nbMines = 10;
 let longClickDelay:number = undefined;
+let nonTurnedShellShowDelay: number = undefined;
 
 const parsed = parse(location.search);
 if (parsed.rows && typeof parsed.rows == 'string') {
@@ -42,8 +43,13 @@ if (parsed.longClickDelay && typeof parsed.longClickDelay == 'string') {
         longClickDelay = parseInt(parsed.longClickDelay);
     } catch (e) {}
 }
+if (parsed.nonTurnedShellShowDelay && typeof parsed.nonTurnedShellShowDelay == 'string') {
+    try {
+        nonTurnedShellShowDelay = parseInt(parsed.nonTurnedShellShowDelay);
+    } catch (e) {}
+}
 
 ReactDOM.render(
-    <Game rows={rows} cols={cols} nbMines={nbMines} longClickDelay={longClickDelay} />,
+    <Game rows={rows} cols={cols} nbMines={nbMines} longClickDelay={longClickDelay} nonTurnedShellShowDelay={nonTurnedShellShowDelay} />,
     document.getElementById('MineSweeper')
 );

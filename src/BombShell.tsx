@@ -56,6 +56,7 @@ export const BombShell:React.FC<BombShellProps> = (props) => {
     const classes = ['shell'];
     if (typeof etat !== 'undefined') {
         classes.push('shell-' + etat);
+        classes.push('shell-id');
     }
     classes.push('shell-' + gameState);
     return <div className={classes.join(' ')} 

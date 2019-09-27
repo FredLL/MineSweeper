@@ -8,10 +8,12 @@ interface GameProps {
     rows: number;
     nbMines: number;
     longClickDelay?: number;
+    nonTurnedShellShowDelay?: number;
 }
 export const Game:React.FC<GameProps> = (props) => {
     const {rows, cols, nbMines} = props;
-    const [state, dispatch] = React.useReducer(reduceGameMap, initState(rows, cols, nbMines));
+    const nonTurnedShellShowDelay = props.nonTurnedShellShowDelay?props.nonTurnedShellShowDelay:10000;
+    const [state, dispatch] = React.useReducer(reduceGameMap, initState(rows, cols, nbMines, false, nonTurnedShellShowDelay));
     const longClickDelay = props.longClickDelay?props.longClickDelay:600;
     const onShellClick = (row: number, col: number, type: number) => {
         if (state.result == Result.Bombed) {
@@ -50,9 +52,9 @@ export const Game:React.FC<GameProps> = (props) => {
             counterAction = CounterAction.Restart;
             break;
     }
-    const game: JSX.Element[] = [];
+    const game: React.ReactNode[] = [];
     for (let iRow = 0; iRow < rows; iRow++) {
-        const row:JSX.Element[] = [];
+        const row: React.ReactNode[] = [];
         for (let iCol = 0; iCol < cols; iCol++) {
             row.push(<BombShell key={iRow+'-'+iCol} 
                         x={iRow} 
