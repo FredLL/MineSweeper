@@ -35,7 +35,7 @@ if you want to use as a PWA, you need to deploy on a https server
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/FredLL/MineSweeper/tags). 
 
 ## Authors
 
