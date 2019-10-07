@@ -9,14 +9,14 @@ interface ShellClickAction extends ActionType {
 }
 
 export interface StateType {
-    gameMap: number[],
-    mineMap: number[],
-    cols: number,
-    rows: number,
-    nbMines: number,
-    result?: Result,
-    nbFlags?: number,
-    nonTurnedShellShowDelay: number
+  gameMap: number[],
+  mineMap: number[],
+  cols: number,
+  rows: number,
+  nbMines: number,
+  result?: Result,
+  nbFlags?: number,
+  nonTurnedShellShowDelay: number
 }
 
 export enum Result {

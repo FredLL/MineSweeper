@@ -3,6 +3,7 @@ import * as ReactDOM from "react-dom";
 import {parse} from "query-string";
 import {Game} from "./Game";
 
+// PWA stuff
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
       navigator.serviceWorker.register('service-worker.js').then(registration => {
@@ -16,6 +17,7 @@ if ('serviceWorker' in navigator) {
     console.log('SW not available');
 }
 
+// URL parameters and default values
 let rows = 9;
 let cols = 9;
 let nbMines = 10;

@@ -17,6 +17,7 @@ const cancelEvt = (evt: React.MouseEvent<HTMLDivElement>) => {
 
 export const BombShell:React.FC<BombShellProps> = (props) => {
     const {etat, gameState, x, y, width, height, longClickDelay, onclick} = props;
+    // manage click/touch
     let timer = -1;
     const [state] = React.useState({longPress: false});
     const shellClick = (evt: React.MouseEvent<HTMLDivElement>) => {
@@ -53,12 +54,11 @@ export const BombShell:React.FC<BombShellProps> = (props) => {
         window.clearTimeout(timer);
         onclick(x, y, button);
     };
-    const classes = ['shell'];
+    // 
+    const classes = ['shell', 'shell-' + gameState];
     if (typeof etat !== 'undefined') {
-        classes.push('shell-' + etat);
-        classes.push('shell-id');
+        classes.push('shell-' + etat, 'shell-id');
     }
-    classes.push('shell-' + gameState);
     return <div className={classes.join(' ')} 
         style={{width: width, height: height}}
         onMouseDown={initLongClick} 
