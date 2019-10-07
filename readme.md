@@ -51,3 +51,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 * Thanks to Fabien for the positive comments
 * Windows 3.0
+* Wikimedia and kazukiokumura for SVG files [license](https://commons.wikimedia.org/wiki/Commons:GNU_Free_Documentation_License,_version_1.2)
