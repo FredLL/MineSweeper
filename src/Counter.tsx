@@ -1,31 +1,31 @@
 import * as React from "react";
 
 export enum CounterAction {
-    Start,
-    Stop,
-    Restart
+  Start,
+  Stop,
+  Restart
 }
 
 interface CounterProps {
-    id: string;
-    value?: number;
-    nbDigits?: number;
-    extendsWithValue?: boolean;
-    action?: CounterAction;
-    interval?: number;
+  id: string;
+  value?: number;
+  nbDigits?: number;
+  extendsWithValue?: boolean;
+  action?: CounterAction;
+  interval?: number;
 }
 
-interface CounterState {
-    action?: CounterAction;
-    value?: number;
-}
 const counterTimers: Map<string, number> = new Map();
 
 export const Counter:React.FC<CounterProps> = (props) => {
-  let {id, value, nbDigits, extendsWithValue, action, interval} = props;
-  const [counterState, setCounterState] = React.useState({} as CounterState);
+  const {id, extendsWithValue, action} = props;
+  let {value, nbDigits, interval} = props;
+  // states
+  const [counterAction, setCounterAction] = React.useState(undefined as CounterAction);
+  const [counterValue, setCounterValue] = React.useState(undefined as number);
+  // default values
   if (typeof value === 'undefined') {
-    value = counterState.value;
+    value = counterValue;
     if (typeof value === 'undefined') {
       value = 0;
     }
@@ -38,7 +38,8 @@ export const Counter:React.FC<CounterProps> = (props) => {
       nbDigits++;
     }
   }
-  if (typeof action !== 'undefined' && action != counterState.action) {
+  if (typeof action !== 'undefined' && action != counterAction) {
+    setCounterAction(action);
     switch (action) {
       case CounterAction.Start:
         {  
@@ -50,30 +51,24 @@ export const Counter:React.FC<CounterProps> = (props) => {
           if (counterTimer) {
             window.clearInterval(counterTimer);
           }
-          counterTimers.set(id, window.setInterval(() => setCounterState({action: action, value: Math.floor((new Date().getTime() - startTime) / interval)}), interval));
-          setCounterState({
-            action: action,
-            value: 0
-          });
+          counterTimers.set(id, window.setInterval(() => setCounterValue(Math.floor((new Date().getTime() - startTime) / interval)), interval));
+          setCounterValue(0);
           break;
         }  
-      case CounterAction.Restart:
       case CounterAction.Stop:
         {
           const counterTimer = counterTimers.get(id);
           if (counterTimer) {
             window.clearInterval(counterTimer);
             counterTimers.delete(id);
-          }    
-          setCounterState({
-            action: action,
-            value: action == CounterAction.Stop? counterState.value: 0
-          });
-          break;
-        }  
-    }
+          }
+        }
+      case CounterAction.Restart:
+        setCounterValue(0);
+        break;
+      }
   }
-  const digitElts: React.ReactElement[] = [];
+  const digitElts: React.ReactNode[] = [];
   for (let i = 1; i <= nbDigits; i++) {
     digitElts.push(<div key={'CounterDigit-' + i} className={'counter-digit counter-digit-' + (value % 10)}>&nbsp;</div>);
     value = Math.floor(value / 10);
