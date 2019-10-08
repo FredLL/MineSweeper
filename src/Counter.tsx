@@ -55,7 +55,9 @@ export const Counter:React.FC<CounterProps> = (props) => {
           setCounterValue(0);
           break;
         }  
-      case CounterAction.Stop:
+        case CounterAction.Restart:
+          setCounterValue(0);
+        case CounterAction.Stop:
         {
           const counterTimer = counterTimers.get(id);
           if (counterTimer) {
@@ -63,8 +65,6 @@ export const Counter:React.FC<CounterProps> = (props) => {
             counterTimers.delete(id);
           }
         }
-      case CounterAction.Restart:
-        setCounterValue(0);
         break;
       }
   }
