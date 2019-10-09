@@ -7,7 +7,7 @@ export enum CounterAction {
 }
 
 interface CounterProps {
-  id: string;
+  id?: string;
   value?: number;
   nbDigits?: number;
   extendsWithValue?: boolean;
@@ -15,20 +15,16 @@ interface CounterProps {
   interval?: number;
 }
 
-const counterTimers: Map<string, number> = new Map();
-
 export const Counter:React.FC<CounterProps> = (props) => {
-  const {id, extendsWithValue, action} = props;
+  const {extendsWithValue, action} = props;
   let {value, nbDigits, interval} = props;
   // states
   const [counterAction, setCounterAction] = React.useState(undefined as CounterAction);
-  const [counterValue, setCounterValue] = React.useState(undefined as number);
+  const [counterValue, setCounterValue] = React.useState(0);
+  const [timer, setTimer] = React.useState(-1);
   // default values
   if (typeof value === 'undefined') {
     value = counterValue;
-    if (typeof value === 'undefined') {
-      value = 0;
-    }
   }
   if (!nbDigits || extendsWithValue) {
     if (!nbDigits) {
@@ -42,28 +38,22 @@ export const Counter:React.FC<CounterProps> = (props) => {
     setCounterAction(action);
     switch (action) {
       case CounterAction.Start:
-        {  
-          if (!interval) {
-            interval = 1000;
-          }
-          const startTime = new Date().getTime();
-          const counterTimer = counterTimers.get(id);
-          if (counterTimer) {
-            window.clearInterval(counterTimer);
-          }
-          counterTimers.set(id, window.setInterval(() => setCounterValue(Math.floor((new Date().getTime() - startTime) / interval)), interval));
-          setCounterValue(0);
-          break;
-        }  
-        case CounterAction.Restart:
-          setCounterValue(0);
-        case CounterAction.Stop:
-        {
-          const counterTimer = counterTimers.get(id);
-          if (counterTimer) {
-            window.clearInterval(counterTimer);
-            counterTimers.delete(id);
-          }
+        if (!interval) {
+          interval = 1000;
+        }
+        const startTime = new Date().getTime();
+        if (timer != -1) {
+          window.clearInterval(timer);
+        }
+        setTimer(window.setInterval(() => setCounterValue(Math.floor((new Date().getTime() - startTime) / interval)), interval));
+        setCounterValue(0);
+        break;
+      case CounterAction.Restart:
+        setCounterValue(0);
+      case CounterAction.Stop:
+        if (timer != -1) {
+          window.clearInterval(timer);
+          setTimer(-1)
         }
         break;
       }

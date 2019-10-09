@@ -13,8 +13,8 @@ interface GameProps {
 export const Game:React.FC<GameProps> = (props) => {
   const {rows, cols, nbMines} = props;
   const nonTurnedShellShowDelay = props.nonTurnedShellShowDelay?props.nonTurnedShellShowDelay:10000;
-  const [state, dispatch] = React.useReducer(reduceGameMap, initState(rows, cols, nbMines, false, nonTurnedShellShowDelay));
   const longClickDelay = props.longClickDelay?props.longClickDelay:600;
+  const [state, dispatch] = React.useReducer(reduceGameMap, initState(rows, cols, nbMines, false, nonTurnedShellShowDelay));
   const onShellClick = (row: number, col: number, type: number) => {
     if (state.result == Result.Bombed) {
       return;
