@@ -14,7 +14,7 @@ if ('serviceWorker' in navigator) {
     });
   });
 } else {
-    console.log('SW not available');
+  console.log('SW not available');
 }
 
 // URL parameters and default values
@@ -26,32 +26,32 @@ let nonTurnedShellShowDelay: number = undefined;
 
 const parsed = parse(location.search);
 if (parsed.rows && typeof parsed.rows == 'string') {
-    try {
-        rows = parseInt(parsed.rows);
-    } catch (e) {}
+  try {
+    rows = parseInt(parsed.rows);
+  } catch (e) {}
 }
 if (parsed.cols && typeof parsed.cols == 'string') {
-    try {
-        cols = parseInt(parsed.cols);
-    } catch (e) {}
+  try {
+    cols = parseInt(parsed.cols);
+  } catch (e) {}
 }
 if (parsed.nbMines && typeof parsed.nbMines == 'string') {
-    try {
-        nbMines = parseInt(parsed.nbMines);
-    } catch (e) {}
+  try {
+    nbMines = parseInt(parsed.nbMines);
+  } catch (e) {}
 }
 if (parsed.longClickDelay && typeof parsed.longClickDelay == 'string') {
-    try {
-        longClickDelay = parseInt(parsed.longClickDelay);
-    } catch (e) {}
+  try {
+    longClickDelay = parseInt(parsed.longClickDelay);
+  } catch (e) {}
 }
 if (parsed.nonTurnedShellShowDelay && typeof parsed.nonTurnedShellShowDelay == 'string') {
-    try {
-        nonTurnedShellShowDelay = parseInt(parsed.nonTurnedShellShowDelay);
-    } catch (e) {}
+  try {
+    nonTurnedShellShowDelay = parseInt(parsed.nonTurnedShellShowDelay);
+  } catch (e) {}
 }
 
 ReactDOM.render(
-    <Game rows={rows} cols={cols} nbMines={nbMines} longClickDelay={longClickDelay} nonTurnedShellShowDelay={nonTurnedShellShowDelay} />,
-    document.getElementById('MineSweeper')
+  <Game rows={rows} cols={cols} nbMines={nbMines} longClickDelay={longClickDelay} nonTurnedShellShowDelay={nonTurnedShellShowDelay} />,
+  document.getElementById('MineSweeper')
 );
