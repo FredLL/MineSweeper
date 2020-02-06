@@ -13,6 +13,7 @@ interface CounterProps {
   extendsWithValue?: boolean;
   action?: CounterAction;
   interval?: number;
+  callback?: (action:CounterAction, value: number)=>void;
 }
 
 export const Counter:React.FC<CounterProps> = (props) => {
@@ -35,6 +36,9 @@ export const Counter:React.FC<CounterProps> = (props) => {
     }
   }
   if (typeof action !== 'undefined' && action != counterAction) {
+    if (props.callback) {
+      window.setTimeout(() => props.callback(action, counterValue), 1);
+    }
     setCounterAction(action);
     switch (action) {
       case CounterAction.Start:
