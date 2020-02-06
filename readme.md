@@ -6,7 +6,7 @@ the old windows game rewritten with React and TypeScript
 
 * clone
 * npm install
-* npm start
+* npm run dev:start
 
 ### Prerequisites
 
@@ -21,7 +21,7 @@ npm install should give you everything (including typescript and webpack)
 
 ## Running the tests
 
-npm start and http://localhost:8080 ;-)
+npm run dev:start and http://localhost:8080 ;-)
 
 ## Deployment
 
