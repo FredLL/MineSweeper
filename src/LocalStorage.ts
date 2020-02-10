@@ -36,7 +36,6 @@ interface Result {
 
 export const getBestResult = (mode=DEFAULT_MODE) => {
   let bestTime = -1;
-  let bestMode = -1;
   let desc = 'Nobody yet';
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
@@ -45,14 +44,11 @@ export const getBestResult = (mode=DEFAULT_MODE) => {
       if (mode == parts[2]) {
         try {
           const result = JSON.parse(localStorage.getItem(localStorage.key(i)));
-          if (result.colsRows > bestMode) {
-            bestMode = result.colsRows;
-            if (bestTime == -1 || result.time < bestTime) {
-              bestTime = result.time;
-              desc = '' + bestTime + ' secs by ' + parts[1];
-            }
+          if (bestTime == -1 || result.time < bestTime) {
+            bestTime = result.time;
+            desc = '' + bestTime + ' secs by ' + parts[1];
           }
-        } catch (e) {}
+        } catch (e) {console.warn(e)}
       }
     }
   }
