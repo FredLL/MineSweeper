@@ -57,11 +57,13 @@ module.exports = {
             },
             debug: true
         }),
-        new CopyWebpackPlugin([
-            {from: 'static/*.css'},
-            {from: 'static/*.svg'},
-            {from: 'static/*.png'}
-        ]),
+        new CopyWebpackPlugin({
+            patterns: [
+                {from: 'static/*.css'},
+                {from: 'static/*.svg'},
+                {from: 'static/*.png'}
+            ]
+        }),
         new HtmlWebpackPlugin({
             template: 'static/index.html'
         }),
