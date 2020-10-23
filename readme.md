@@ -10,7 +10,7 @@ the old windows game rewritten with React and TypeScript
 
 ### Prerequisites
 
-* node.js (we used 10.x LTS)
+* node.js (we used 12.x LTS)
 * npm (coming with node)
 * check package.json
 
