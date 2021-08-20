@@ -212,7 +212,7 @@
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
     z-index: 1; /* Sit on top */
-    padding-top: 100px; /* Location of the box */
+    padding-top: 5vh; /* Location of the box */
     left: 0;
     top: 0;
     width: 100%; /* Full width */
@@ -264,7 +264,7 @@
   
   .modal-body {
     padding: 2px 16px;
-    max-height: calc(90vh - 170px);
+    max-height: calc(90vh - 70px);
     overflow-y: auto;
   }
   
