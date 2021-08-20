@@ -31,8 +31,9 @@ const baseDelta = [-1, 0, 1];
 const initMines = (rows: number, cols: number, nbMines: number, except: number) => {
   const mineMap: number[] = [];
   let iMines = 0;
+  const nbShells = rows * cols - 1;
   while (iMines < nbMines) {
-    const newMine = Math.round(Math.random() * (rows * cols - 1));
+    const newMine = Math.round(Math.random() * nbShells);
     if (newMine != except && !mineMap[newMine]) {
       mineMap[newMine] = 1;
       iMines++;
@@ -144,8 +145,9 @@ const checkLastClick = (state: StateType) => {
       }
     });
     if (state.nbFlags == state.nbMines) {
+      const mapLength = state.cols * state.rows;
       state.result = Result.Finished;
-      for (let i = 0; i < state.gameMap.length; i++) {
+      for (let i = 0; i < mapLength; i++) {
         if (typeof state.gameMap[i] === 'undefined') {
           state.result = Result.WiP;
           break;
