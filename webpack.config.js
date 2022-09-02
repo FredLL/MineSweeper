@@ -6,8 +6,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const {GenerateSW} = require('workbox-webpack-plugin');
 
-module.exports = {
-    mode: 'development', //'production',
+module.exports = (env, options) => ({
+    mode: options.mode, //'development', 'production',
     entry: [
         "./src/App.tsx"
     ],
@@ -19,7 +19,7 @@ module.exports = {
     },
 
     // Enable sourcemaps for debugging webpack's output.
-    devtool: "source-map",
+    devtool: options.mode === 'development' && "source-map",
 
     devServer: {
         host: '0.0.0.0',
@@ -72,4 +72,4 @@ module.exports = {
         }),
 //        new Visualizer()
     ]
-};
+});
