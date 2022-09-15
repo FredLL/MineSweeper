@@ -8,7 +8,8 @@
     "build": "del-cli dist && webpack --mode production",
     "dev:build": "del-cli dist && webpack --mode development",
     "dev:start": "webpack serve",
-    "start": "node server.js"
+    "start": "node server.js",
+    "deploy": "npm run build && gh-pages -d dist"
   },
   "author": "",
   "license": "ISC",
@@ -18,6 +19,7 @@
     "@types/react-dom": "^18.0.6",
     "copy-webpack-plugin": "^11.0.0",
     "del-cli": "^5.0.0",
+    "gh-pages": "^4.0.0",
     "html-webpack-plugin": "^5.3.2",
     "source-map-loader": "^4.0.0",
     "ts-loader": "^9.2.5",
