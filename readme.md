@@ -1,7 +1,7 @@
 # MineSweeper
 
 the old windows game rewritten with React and TypeScript
-Accessible in [github pages](https://fredll.github.io/MineSweeper/){target="_blank"}
+Accessible in [github pages](https://fredll.github.io/MineSweeper/)
 
 ## Getting Started
 
