@@ -1,6 +1,6 @@
 import * as React from "react";
 import { createRoot } from "react-dom/client";
-import { parse } from "query-string";
+import queryString from "query-string";
 import { Game } from "./Game";
 
 // PWA stuff
@@ -24,7 +24,7 @@ let nbMines = 10;
 let longClickDelay: number = undefined;
 let nonTurnedShellShowDelay: number = undefined;
 
-const parsed = parse(location.search);
+const parsed = queryString.parse(location.search);
 if (parsed.rows && typeof parsed.rows == 'string') {
   try {
     rows = parseInt(parsed.rows);
